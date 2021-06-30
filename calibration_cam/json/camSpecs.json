@@ -1,0 +1,9 @@
+{
+    "DFOV": null,
+    "HFOV": null,
+    "VFOV": null,
+    "sensorSize": [2,2],
+    "focal_length": 2.25,
+    "pixelSize": null,
+    "camResolution": null
+}

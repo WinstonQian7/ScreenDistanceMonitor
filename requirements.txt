@@ -1,0 +1,3 @@
+pip install cv2
+pip install pypiwin32
+pip install setuptools
