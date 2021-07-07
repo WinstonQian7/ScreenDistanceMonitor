@@ -4,25 +4,44 @@ import glob
 import math
 import json
 
+"""
+CALCULATIONS EXPLAINED
 
+Calculate needed parameters for distance calculation (sensorSize and focal_length)
+sensorSize or focal length must be known to complete calculation 
+1. sensorSize is known and focal length is not known
+    calibrateCam() -> calculateFocalLengthCV2(imgDimension['imageDimension'])
+2. sensorSize is not known and focal length is known
+    a) pixelSize is known
+        calculateCamResolution() ->  calculateSensorSizePixelSize()
+    b) DFOV is known, HFOV/VFOV is unknown
+        (calculateHFOV()/calculateVFOV()) -> calculateSensoSize()
+
+PARAMETERS USED
+
+If sensorSize and focal_length is known, no need to run calibration script
+camSpecs.json: DFOV,HFOV,VFOV,sensorSize,focal_length,pixelSize, camResolution
+{   
+    'DFOV': None, #diagnoal FOV
+    'HFOV': None, #horizontal FOV
+    'VFOV': None, #vertical FOV
+    'sensorSize': None, #(w,h) in mm
+    'focal_length': None, #F(mm) 
+    'pixelSize': None, #(w,h) in µm NOT image resolution
+    'camResolution': None #(w,h) in pixels
+}
+imgDimension.json: imageDimension
+{
+    'imageDimension': [400,400] #(w,h) in pixels
+}
+       
+"""
 class calibration:
     def __init__(self,specifications):
-        """
-            If sensorSize and focal_length is known, no need to run calibration script
-            DFOV,HFOV,VFOV,sensorSize,focal_length,pixelSize, camResolution
-            spec =  {   
-                        'DFOV': None, #diagnoal FOV
-                        'HFOV': None, #horizontal FOV
-                        'VFOV': None, #vertical FOV
-                        'sensorSize': None, #(w,h) in mm
-                        'focal_length': None, #F(mm) 
-                        'pixelSize': None, #(w,h) in µm
-                        'camResolution': None #(w,h) in pixels
-                    }
-        """
         self.matrix = None
         self.spec = specifications
     def calibrateCam(self):
+        #Calibrate camera using chessboard
         # termination criteria
         criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
         # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
@@ -31,7 +50,7 @@ class calibration:
         # Arrays to store object points and image points from all the images.
         objpoints = [] # 3d point in real world space
         imgpoints = [] # 2d points in image plane.
-        images = glob.glob('*.jpg')
+        images = glob.glob('calibration_cam/images/*.jpg')
         for fname in images:
             img = cv.imread(fname)
             gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -66,25 +85,39 @@ class calibration:
     def calculateFocalLengthCV2(self,imageDimension):
         #focal length in mm, sensorSize in mm
         self.spec['HFOV'],self.spec['VFOV'],self.spec['focal_length'],_,_ = cv.calibrationMatrixValues(self.matrix,imageDimension,self.spec['sensorSize'][0],self.spec['sensorSize'][1])
+        return self.spec['focal_length']
     def calculateSensorSizePixelSize(self):
         #Only if pixelSize(wxh) is given in Camera specifications
         sensorW = self.spec['pixelSize'][0] * self.spec['camResolution'][0]
         sensorH = self.spec['pixelSize'][1] * self.spec['camResolution'][1]
         self.sensorSize = (sensorW,sensorH)
+    def calculateCamResolution(self):
+        if self.spec['camResolution'] == None:
+            print(self.spec['camResolution'])
+        else:
+            cam = WebcamVideoStream(src=0,width=setImageSize[0],height=setImageSize[1])
+            cam.start()
+            print('[INFO] Capturing from webcam...')
+            self.spec['camResolution'] = cam.getCameraResolution()
+            cam.stop()
+            fpath_cam = 'calibration_cam/json/camSpecs.json'
+        return self.spec['camResolution']
     def calibrationSuccess(self):
         if self.spec['focal_length'] == None or self.spec['sensorSize'] == None:
+            print(self.spec['sensorSize'],self.spec['focal_length'])
             return False
         else:
+            fpath_cam = 'calibration_cam/json/camSpecs.json'
             try:
                 with open(fpath_cam, 'w') as json_file:
-                    json.dump(spec , json_file, indent=4)
+                    json.dump(self.spec , json_file, indent=4)
             except OSError:
                 print("Could not open/write file",fpath_cam)
             return True
 
-def main():
-    fpath_cam = 'json/camSpecs.json'
-    fpath_img = 'json/imgDimension.json'
+def calibrate():
+    fpath_cam = 'calibration_cam/json/camSpecs.json'
+    fpath_img = 'calibration_cam/json/imgDimension.json'
     try:
         with open(fpath_cam, 'r') as json_file:
             spec = json.load(json_file)
@@ -96,15 +129,16 @@ def main():
             imgDimension = json.load(json_file)
     except OSError:
         print("Could not open/read file", fpath)
-    #SEE IF POSSIBLE TO IMPORT WEBCAMVIDEOSTREAM
     setup = calibration(spec)
     if spec['focal_length'] != None and spec['sensorSize'] != None:
         pass 
     elif spec['sensorSize'] != None:
         setup.calibrateCam()
         spec['focal_length'] = setup.calculateFocalLengthCV2(imgDimension['imageDimension'])
+        print(spec['focal_length'])
     elif spec['focal_length'] != None:
         if spec['pixelSize'] != None:
+            spec['camResolution'] = setup.calculateCamResolution()
             spec['sensorSize'] = setup.calculateSensorSizePixelSize()
         elif spec['DFOV'] != None:
             if spec['HFOV'] == None:
@@ -113,30 +147,8 @@ def main():
                 spec['VFOV'] = setup.calculateVFOV()
             spec['sensorSize'] = setup.calculateSensorSize()
     
-    
     if setup.calibrationSuccess() == False:
         raise TypeError('Required conditions for eye distance detection not satisfied.')
     else:
         print("Required conditions for eye distance detection have been meet")
 
-
-      
-
-
-
-
-if __name__ == "__main__":
-    main()
-    """
-    spec =  {   
-                'DFOV': None, #diagnoal FOV
-                'HFOV': None, #horizontal FOV
-                'VFOV': None, #vertical FOV
-                'sensorSize': (), #(w,h) in mm
-                'focal_length': None, #F(mm) or F(pixels) NEED TO MODIFY EVENTUALLY
-                'pixelSize': None #(w,h) in µm 
-            }
-    c = calibration(spec)
-
-    c.calibrateCam()
-    """

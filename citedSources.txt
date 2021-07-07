@@ -4,3 +4,10 @@ https://learnopencv.com/approximate-focal-length-for-webcams-and-cell-phone-came
 
 https://ivanludvig.github.io/blog/2019/07/20/calculating-screen-to-face-distance-android
 
+https://byteiota.com/face-recognition/
+
+https://en.wikipedia.org/wiki/Image_sensor_format
+
+https://medium.com/@stepanfilonov/tracking-your-eyes-with-python-3952e66194a6
+
+https://towardsdatascience.com/real-time-eye-tracking-using-opencv-and-dlib-b504ca724ac6
