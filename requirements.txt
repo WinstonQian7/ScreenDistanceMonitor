@@ -1,2 +1,5 @@
-opencv-python==4.4.0.44
-
+numpy==1.21.1
+opencv-python==4.5.3.56
+pypiwin32==223
+pywin32==301
+win10toast==0.9

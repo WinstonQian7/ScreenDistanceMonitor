@@ -11,3 +11,7 @@ https://en.wikipedia.org/wiki/Image_sensor_format
 https://medium.com/@stepanfilonov/tracking-your-eyes-with-python-3952e66194a6
 
 https://towardsdatascience.com/real-time-eye-tracking-using-opencv-and-dlib-b504ca724ac6
+
+https://www.toptenreviews.com/1080p-2-0-mega-pixels-understanding-webcam-technical-terms
+
+https://www.pyimagesearch.com/2017/11/06/deep-learning-opencvs-blobfromimage-works/

@@ -40,6 +40,7 @@ class calibration:
     def __init__(self,specifications):
         self.matrix = None
         self.spec = specifications
+    #@staticmethod
     def calibrateCam(self):
         #Calibrate camera using chessboard
         # termination criteria
@@ -67,30 +68,36 @@ class calibration:
                 #cv.waitKey(500)
         cv.destroyAllWindows()
         ret, self.matrix, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+    @staticmethod
     def calculateHFOV(self):
         try:
             self.spec['HFOV'] = 2 * math.atan(math.tan(self.spec['DFOV'])*math.cos(math.atan(self.spec['camResolution'][1]/self.spec['camResolution'][0])))
         except ZeroDivisionError:
             print("Cannot divide by Zero. Entered {}x{} valid webcam resolution.".format(self.spec['camResolution'][1],self.spec['camResolution'][0]))
+    @staticmethod
     def calculateVFOV(self):
         try:
             self.spec['VFOV'] = 2 * math.atan(math.tan(self.spec['DFOV'])*math.sin(math.atan(self.spec['camResolution'][1]/self.spec['camResolution'][0])))
         except ZeroDivisionError:
             print("Cannot divide by Zero. Entered {}x{} valid webcam resolution.".format(self.spec['camResolution'][1],self.spec['camResolution'][0]))
+    @staticmethod
     def calculateSensorSize(self):
         #SensorWidth(mm) = tan(toRadians(HFOV/2))*2*F(mm) (eq)
         sensorW = (float) (math.tan(math.toRadians(self.spec['HFOV']/2))*2*self.spec['focal_length'])
         sensorH = (float) (math.tan(math.toRadians(self.spec['VFOV']/2))*2*self.spec['focal_length'])
         self.spec['sensorSize'] = (sensorW,sensorH)
+    #@staticmethod
     def calculateFocalLengthCV2(self,imageDimension):
         #focal length in mm, sensorSize in mm
         self.spec['HFOV'],self.spec['VFOV'],self.spec['focal_length'],_,_ = cv.calibrationMatrixValues(self.matrix,imageDimension,self.spec['sensorSize'][0],self.spec['sensorSize'][1])
         return self.spec['focal_length']
+    @staticmethod
     def calculateSensorSizePixelSize(self):
         #Only if pixelSize(wxh) is given in Camera specifications
         sensorW = self.spec['pixelSize'][0] * self.spec['camResolution'][0]
         sensorH = self.spec['pixelSize'][1] * self.spec['camResolution'][1]
         self.sensorSize = (sensorW,sensorH)
+    @staticmethod
     def calculateCamResolution(self):
         if self.spec['camResolution'] == None:
             print(self.spec['camResolution'])
@@ -102,6 +109,7 @@ class calibration:
             cam.stop()
             fpath_cam = 'calibration_cam/json/camSpecs.json'
         return self.spec['camResolution']
+    #@staticmethod
     def calibrationSuccess(self):
         if self.spec['focal_length'] == None or self.spec['sensorSize'] == None:
             print(self.spec['sensorSize'],self.spec['focal_length'])
@@ -135,7 +143,7 @@ def calibrate():
     elif spec['sensorSize'] != None:
         setup.calibrateCam()
         spec['focal_length'] = setup.calculateFocalLengthCV2(imgDimension['imageDimension'])
-        print(spec['focal_length'])
+        print('[INFO] calibration length: {:.3f}'.format(spec['focal_length']))
     elif spec['focal_length'] != None:
         if spec['pixelSize'] != None:
             spec['camResolution'] = setup.calculateCamResolution()
@@ -146,9 +154,10 @@ def calibrate():
             elif spec['VFOV'] == None:
                 spec['VFOV'] = setup.calculateVFOV()
             spec['sensorSize'] = setup.calculateSensorSize()
-    
+    #Checks if sensorSize and focal_length is defined
     if setup.calibrationSuccess() == False:
         raise TypeError('Required conditions for eye distance detection not satisfied.')
     else:
-        print("Required conditions for eye distance detection have been meet")
+        print('Required conditions for eye distance detection have been meet')
 
+calibrate()
