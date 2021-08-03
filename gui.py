@@ -1,18 +1,17 @@
 import cv2 
-import qimage2ndarray
+import qimage2ndarray 
 import sys 
-import PyQt5
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import QApplication,QWidget,QLabel,QPushButton, \
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import QApplication,QWidget,QLabel,QPushButton, \
 	QVBoxLayout, QMainWindow
-from PyQt5.QtMultimediaWidgets import QVideoWidget
+from PySide2.QtMultimediaWidgets import QVideoWidget
 
 
 class MainWindow(QMainWindow):
 	def __init__(self):
 		super().__init__()
-		self.title = 'Distance Monitor GUI Interface'
+		self.title = 'FeedTheChildren GUI Interface'
 		self.setWindowTitle(self.title)
 		self.screen_size = QSize(600,600)
 		self.initUI()
