@@ -7,43 +7,39 @@ import time
 
 #local modules
 from win10toast import ToastNotifier
-from calculate_distance import EyeDistance 
+from calculate_distance import EyeDistance
 from WebcamVideoStream import WebcamVideoStream
 from fps_checker import FPS
 
 class ScreenDistance:
-    net = None
-    eye_detect = None
     def __init__(self):
-        ScreenDistance.load_models() #loads opencv dnn/haarcascades models
+        self.net = None
+        self.eye_detect = None
+        self.load_models() #loads opencv dnn/haarcascades models
 
-    @staticmethod
-    def load_models():
-        if not ScreenDistance.net:
-            ScreenDistance.net = ScreenDistance.load_opencv()
-        if not ScreenDistance.eye_detect:
-            ScreenDistance.eye_detect = ScreenDistance.load_haarcascade()
+    def load_models(self):
+        if not self.net:
+            self.net = self.load_opencv()
+        if not self.eye_detect:
+            self.eye_detect = self.load_haarcascade()
 
-    @staticmethod
-    def load_opencv():
+    def load_opencv(self):
         model_path = "./Models/OpenCV/opencv_face_detector_uint8.pb"
         model_pbtxt = "./Models/OpenCV/opencv_face_detector.pbtxt"
-        net = cv2.dnn.readNetFromTensorflow(model_path, model_pbtxt)
-        return net
+        self.net = cv2.dnn.readNetFromTensorflow(model_path, model_pbtxt)
+        return self.net
 
-    @staticmethod
-    def load_haarcascade():
+    def load_haarcascade(self):
         model_path = 'models/OpenCV/haarcascade_eye_tree_eyeglasses.xml'
         classifier = cv2.CascadeClassifier(model_path)
         return classifier
 
-    @staticmethod
-    def detect_faces(image): 
+    def detect_faces(self,image): 
         height, width, channels = image.shape
 
         blob = cv2.dnn.blobFromImage(image, 1.0, (300, 300), [104, 117, 123], False, False)
-        ScreenDistance.net.setInput(blob)
-        detections = ScreenDistance.net.forward()
+        self.net.setInput(blob)
+        detections = self.net.forward()
 
         faces = []
 
@@ -58,9 +54,8 @@ class ScreenDistance:
 
         return faces
 
-    @staticmethod
-    def detect_eyes(image, display_image=False, info=False, adj_factor = 0):
-        faces = ScreenDistance.detect_faces(image)
+    def detect_eyes(self,image, display_image=False, info=False, adj_factor = 0):
+        faces = self.detect_faces(image)
         if len(faces) == 1:
             x, y, w, h = faces[0]
             im_face = image[int(y+h/4):int(y + h/2), x:x + w]
@@ -79,7 +74,7 @@ class ScreenDistance:
                     # and draw them on the image
                     #for (x, y) in shape:
                     #cv2.circle(im_face, (x, y), 1, (0, 0, 255), -1)
-            eyes = ScreenDistance.eye_detect.detectMultiScale(gray, 1.05, 3)            
+            eyes = self.eye_detect.detectMultiScale(gray, 1.05, 3)            
             if len(eyes) == 2:
                 leftEyePos = []
                 rightEyePos = []
@@ -93,7 +88,8 @@ class ScreenDistance:
                     else:
                         rightEyePos = [getX,getY]
                 if leftEyePos != [] and rightEyePos != []:
-                    dis = EyeDistance.eyePos(leftEyePos,rightEyePos) #(cm,in)
+                    dis_obj = EyeDistance()
+                    dis = dis_obj.eyePos(leftEyePos,rightEyePos) #(cm,in)
                     if adj_factor != 0: #Need to fix in interface
                         dis[1] += adj_factor
                     
@@ -114,7 +110,8 @@ class ScreenDistance:
                 return 0 #eyes were not detected
 
 def runDetection(display_image=False, sleep_time=5, info=False, adj_factor=0):
-    ScreenDistance.load_models()
+    screen_distance = ScreenDistance() 
+    screen_distance.load_models()
     toaster = ToastNotifier()
     detected_count = 0
     fetched_count = 0
@@ -131,7 +128,7 @@ def runDetection(display_image=False, sleep_time=5, info=False, adj_factor=0):
             print('[STATUS] Finished detection')
             break
         if fps._numFrames % 60 == 0: #Runs detection every 60 frames
-            eyedetection_status = ScreenDistance.detect_eyes(image, display_image,info,adj_factor) 
+            eyedetection_status = screen_distance.detect_eyes(image, display_image,info,adj_factor) 
             fetched_count += 1
             if eyedetection_status == 1: #eye distance is too close
                 detected_count += 1

@@ -4,7 +4,6 @@ from distance_processing import runDetection
 from calibration_cam import calibration
 
 def main():
-    #calibration.calibrate()
     parser = argparse.ArgumentParser()
     parser.add_argument("--display-image","-d", action="store_true", help="Display Detected of eyes")
     parser.add_argument("--cooldown", "-c", type=int,default=5,help="cooldown period between notifications and detection will not run")

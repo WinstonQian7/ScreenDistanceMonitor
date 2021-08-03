@@ -1,1 +1,0 @@
-#Assumption: webcam camera has a 16:9 aspect ratio
