@@ -40,6 +40,9 @@ class calibration:
     def __init__(self,specifications):
         self.matrix = None
         self.spec = specifications
+        self.spec['sensorSize'] = tuple(self.spec['sensorSize'])
+        print(self.spec['sensorSize'])
+
     def calibrateCam(self):
         #Calibrate camera using chessboard
         # termination criteria
@@ -122,14 +125,15 @@ def calibrate():
         with open(fpath_cam, 'r') as json_file:
             spec = json.load(json_file)
     except OSError:
-        print("Could not open/read file", fpath)
+        print("Could not open/read file", fpath_cam)
     
     try:
         with open(fpath_img, 'r') as json_file:
             imgDimension = json.load(json_file)
     except OSError:
-        print("Could not open/read file", fpath)
+        print("Could not open/read file", fpath_img)
     setup = calibration(spec)
+    imgDimension['imageDimension'] = tuple(imgDimension['imageDimension'])
     if spec['focal_length'] != None and spec['sensorSize'] != None:
         pass 
     elif spec['sensorSize'] != None:

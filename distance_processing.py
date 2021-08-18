@@ -94,7 +94,7 @@ class ScreenDistance:
                         dis[1] += adj_factor
                     
                     if display_image:
-                        cv2.imshow("Detected", cv2.resize(im_face,(200,200)))
+                        cv2.imshow("Detected", cv2.resize(image[y:y+h,x:x+w], (300,240)))
                     if info:
                         if len(eyes) == 0:
                             print('[INFO] No Eyes are being detected')
