@@ -3,7 +3,7 @@ import cv2 as cv
 import glob
 import math
 import json
-
+import user_settings
 """
 CALCULATIONS EXPLAINED
 
@@ -53,7 +53,7 @@ class calibration:
         # Arrays to store object points and image points from all the images.
         objpoints = [] # 3d point in real world space
         imgpoints = [] # 2d points in image plane.
-        images = glob.glob('calibration_cam/images/*.jpg')
+        images = glob.glob('calibration_cam/calibration_images/*.jpg')
         for fname in images:
             img = cv.imread(fname)
             gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -103,14 +103,14 @@ class calibration:
             print('[INFO] Capturing from webcam...')
             self.spec['camResolution'] = cam.getCameraResolution()
             cam.stop()
-            fpath_cam = 'calibration_cam/json/camSpecs.json'
+            fpath_cam = 'user_settings/camera_specifications/camSpecs.json'
         return self.spec['camResolution']
     def calibrationSuccess(self):
         if self.spec['focal_length'] == None or self.spec['sensorSize'] == None:
             print(self.spec['sensorSize'],self.spec['focal_length'])
             return False
         else:
-            fpath_cam = 'calibration_cam/json/camSpecs.json'
+            fpath_cam = 'user_settings/camera_specifications/camSpecs.json'
             try:
                 with open(fpath_cam, 'w') as json_file:
                     json.dump(self.spec , json_file, indent=4)
@@ -119,8 +119,8 @@ class calibration:
             return True
 
 def calibrate():
-    fpath_cam = 'calibration_cam/json/camSpecs.json'
-    fpath_img = 'calibration_cam/json/imgDimension.json'
+    fpath_cam = 'user_settings/camera_specifications/camSpecs.json'
+    fpath_img = 'user_settings/camera_specifications/imgDimension.json'
     try:
         with open(fpath_cam, 'r') as json_file:
             spec = json.load(json_file)

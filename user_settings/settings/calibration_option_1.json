@@ -1,0 +1,12 @@
+{
+    "DFOV": null,
+    "HFOV": 38.846009727825994,
+    "VFOV": 40.931396538563895,
+    "sensorSize": [
+        1.6,
+        1.2
+    ],
+    "focal_length": 2.1362835327293075,
+    "pixelSize": null,
+    "camResolution": null
+}

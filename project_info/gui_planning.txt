@@ -6,4 +6,4 @@ Start Menu - start app button, exit app button, change settings button,
 Settings - display detected eyes checkbox, enter cooldown field, option 1, option 2 
 option 1 - enter fields for variables(focal length or sensor size must be filled) 
 option 2 - adjustment field, start camera button  
-In-Progress Screen - settings button, pause button, exit button 
+In-Progress Screen - settings button, exit button 

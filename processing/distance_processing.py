@@ -6,10 +6,11 @@ import numpy as np
 import time
 
 #local modules
+import processing
 from win10toast import ToastNotifier
-from calculate_distance import EyeDistance
-from WebcamVideoStream import WebcamVideoStream
-from fps_checker import FPS
+from processing.calculate_distance import EyeDistance
+from processing.WebcamVideoStream import WebcamVideoStream
+from processing.fps_checker import FPS
 
 class ScreenDistance:
     def __init__(self):
@@ -109,13 +110,16 @@ class ScreenDistance:
                         return -1 #eye distance is ideal
                 return 0 #eyes were not detected
 
-def runDetection(display_image=False, sleep_time=5, info=False, adj_factor=0):
+def runDetection(display_image=False, sleep_time=5, seconds_or_minutes=False, info=False, adj_factor=0):
     screen_distance = ScreenDistance() 
     screen_distance.load_models()
     toaster = ToastNotifier()
     detected_count = 0
+    if seconds_or_minutes == False:
+        sleep_time = sleep_time * 60
+    else:
+        sleep_time = sleep_time
     fetched_count = 0
-    sleep_time = sleep_time
     setImageSize = (400,400) #can change in future
     cam = WebcamVideoStream(src=0,width=setImageSize[0],height=setImageSize[1])
     cam.start()
