@@ -7,7 +7,8 @@ import time
 
 #local modules
 import processing
-from win10toast import ToastNotifier
+from winotify import Notification,audio
+
 from processing.calculate_distance import EyeDistance
 from processing.WebcamVideoStream import WebcamVideoStream
 from processing.fps_checker import FPS
@@ -16,6 +17,8 @@ class ScreenDistance:
     def __init__(self):
         self.net = None
         self.eye_detect = None
+        self.dis = None #detected distance from screen
+        self.eye_count = 0 #number of eyes 
         self.load_models() #loads opencv dnn/haarcascades models
 
     def load_models(self):
@@ -60,23 +63,10 @@ class ScreenDistance:
         if len(faces) == 1:
             x, y, w, h = faces[0]
             im_face = image[int(y+h/4):int(y + h/2), x:x + w]
-                    #im_face = image[int(y+h/4):int(y + h/2), x:int(x + w/2)]
-                    #im_face = cv2.resize(im_face,(300,300))
             gray = cv2.cvtColor(im_face, cv2.COLOR_BGR2GRAY) #converts to grayscale for eye detection
-                    #im_face = cv2.resize(gray,(300,300))
-                    #im_eye = image[int(y+h/4):int(y + h/2), x:int(x + w/2)]
-                    #im_eye = cv2.resize(im_eye,(300,300))
-                    #cv2.imshow("Detected", gray)
-                    # Detect landmarks on "image_gray"
-                  
-                    #shape = ScreenDistance.predictor(im_face, dlib.rectangle(x,y,(x+w),(y+h)))
-                    #shape = face_utils.shape_to_np(shape)
-                    # loop over the (x, y)-coordinates for the facial landmarks
-                    # and draw them on the image
-                    #for (x, y) in shape:
-                    #cv2.circle(im_face, (x, y), 1, (0, 0, 255), -1)
-            eyes = self.eye_detect.detectMultiScale(gray, 1.05, 3)            
-            if len(eyes) == 2:
+            eyes = self.eye_detect.detectMultiScale(gray, 1.05, 3) 
+            self.eye_count = len(eyes)           
+            if self.eye_count == 2:
                 leftEyePos = []
                 rightEyePos = []
                 faceHalf = w / 2
@@ -90,27 +80,29 @@ class ScreenDistance:
                         rightEyePos = [getX,getY]
                 if leftEyePos != [] and rightEyePos != []:
                     dis_obj = EyeDistance()
-                    dis = dis_obj.eyePos(leftEyePos,rightEyePos) #(cm,in)
+                    self.dis = dis_obj.eyePos(leftEyePos,rightEyePos) #in
                     if adj_factor != 0: #Need to fix in interface
-                        dis[1] += adj_factor
-                    
+                        self.dis += adj_factor
                     if display_image:
-                        cv2.imshow("Detected", cv2.resize(image[y:y+h,x:x+w], (300,240)))
+                        self.display_frame = cv2.resize(image[y:y+h,x:x+w], (300,240))
+                        cv2.imshow("Detected", self.display_frame)
                     if info:
-                        if len(eyes) == 0:
-                            print('[INFO] No Eyes are being detected')
-                        else:
-                            print('[INFO] {} eyes are being detected'.format(len(eyes)))
-                            if dis != None:
-                                print('[INFO] {:.1f} cm'.format(dis[0]))
-                                print('[INFO] {:.1f} in'.format(dis[1]))
-                    if dis[1] < 24:
-                        return 1 #eye distance is too close
-                    elif dis[1] > 24 and dis[1] < 36:
+                        print('[INFO] 2 eyes are being detected')
+                        if self.dis != None:
+                            print('[INFO] {:.1f} in'.format(self.dis))
+                    if self.dis >= 0 and self.dis < 24:
+                        return 1  #eye distance is too close
+                    elif self.dis > 24 and self.dis < 36:
                         return -1 #eye distance is ideal
-                return 0 #eyes were not detected
+            if info:
+                if self.eye_count == 0:
+                    print('[INFO] No Eyes are being detected')
+                else:
+                    print('[INFO] {} eyes are being detected'.format(self.eye_count))
+                    
+            return 0  #eyes were not detected
 
-def runDetection(display_image=False, sleep_time=5, seconds_or_minutes=False, info=False, adj_factor=0):
+def runDetection(display_image=False, sleep_time=3, seconds_or_minutes=False, info=False, adj_factor=0):
     screen_distance = ScreenDistance() 
     screen_distance.load_models()
     toaster = ToastNotifier()
@@ -132,7 +124,7 @@ def runDetection(display_image=False, sleep_time=5, seconds_or_minutes=False, in
             print('[STATUS] Finished detection')
             break
         if fps._numFrames % 60 == 0: #Runs detection every 60 frames
-            eyedetection_status = screen_distance.detect_eyes(image, display_image,info,adj_factor) 
+            eyedetection_status = screen_distance.detect_eyes(image, display_image,info,adj_factor)
             fetched_count += 1
             if eyedetection_status == 1: #eye distance is too close
                 detected_count += 1
@@ -144,11 +136,12 @@ def runDetection(display_image=False, sleep_time=5, seconds_or_minutes=False, in
         #of sleep parameter
         if fetched_count == 6:
             if detected_count >= 2:
-                toaster.show_toast(
-                        "ScreenDistance Monitor",
-                        "Too close to screen!", icon_path=None,
-                        duration=sleep_time,threaded=False)
-            fps.sleep_time(sleep_time)
+                self.toaster = Notification(app_id="example app",
+                     title="ScreenDistance Monitor",
+                     msg="Reminder: Too close to screen!")
+                self.toaster.set_audio(audio.Default, loop=True)
+                self.toaster.build().show()
+            #fps.sleep_time(sleep_time)
             fetched_count = 0
             detected_count = 0
         key = cv2.waitKey(1)

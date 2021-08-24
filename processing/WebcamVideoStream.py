@@ -20,9 +20,10 @@ class WebcamVideoStream:
 		while True:
 			# if the thread indicator variable is set, stop the thread
 			if self.stopped:
-				return
+				self.stream.release()
 			# otherwise, read the next frame from the stream
 			(self.grabbed, self.frame) = self.stream.read()
+			
 			self.frame = cv2.resize(self.frame,self.dimension,interpolation=cv2.INTER_AREA)
 	def read(self):
 		# return the frame most recently read

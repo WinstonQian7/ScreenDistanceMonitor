@@ -1,5 +1,5 @@
-numpy==1.21.1
 opencv-python==4.5.3.56
-pypiwin32==223
-pywin32==301
-win10toast==0.9
+winotify==1.0.4
+PyQt5==5.15.4
+PyQt5-Qt5==5.15.2
+PyQt5-sip==12.9.0

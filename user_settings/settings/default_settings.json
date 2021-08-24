@@ -1,9 +1,8 @@
 {
-	"display_detected_eyes": false,
-	"display_distance": true,
-	"camera_calibration": false,
-	"displayed_distance": null,
-	"measured_distance": 12,
-	"notification_cooldown": 3,
-	"seconds_or_minutes": false
+    "display_distance": true,
+    "displayed_distance": "",
+    "measured_distance": "12",
+    "webcam": "0",
+    "notification_cooldown": "3",
+    "seconds_or_minutes": false
 }

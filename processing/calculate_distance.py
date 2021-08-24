@@ -1,5 +1,5 @@
 import json
-
+import user_settings
 #Uses Ivan Ludvig's eye distance algorithm to compute distance from screen 
 class EyeDistance:
 	DIS_BTW_EYES = 63 #average distance between eyes 63mm
@@ -7,8 +7,8 @@ class EyeDistance:
 		#Load camera specifications and image Dimension from json
 		self.loadJSON()
 	def loadJSON(self):
-		fpath_cam = 'calibration_cam/json/camSpecs.json'
-		fpath_img = 'calibration_cam/json/imgDimension.json'
+		fpath_cam = "user_settings/camera_specifications/camSpecs.json"
+		fpath_img = "user_settings/camera_specifications/imgDimension.json"
 		try:
 			with open(fpath_cam, 'r') as json_file:
 				spec = json.load(json_file)
@@ -33,6 +33,6 @@ class EyeDistance:
 
 		distanceCM = distance/10 #Distance in cm
 		distanceIN = distanceCM / 2.54 #Distance in In
-		return [distanceCM,distanceIN]
+		return distanceIN
 
 

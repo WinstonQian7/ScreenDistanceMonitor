@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'gui.ui'
+# Form implementation generated from reading ui file 'new_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -9,409 +9,588 @@
 
 import json
 import sys
+import time
+import cv2
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QWidget, QAction
+from winotify import Notification,audio
+
+from processing.distance_processing import ScreenDistance
+from processing.calculate_distance import EyeDistance
+from processing.WebcamVideoStream import WebcamVideoStream
+from processing.fps_checker import FPS
+from calibration_cam.calibration import calibrate
 
 
-class Ui_Dialog(object):
-    fpath_user_settings = "user_settings/settings/user_settings.json"
-    fpath_default_settings = "user_settings/settings/default_settings.json"
-    fpath_cam_user = "user_settings/camera_specifications/camSpecs.json"
-    fpath_cam_calibration = "user_settings/camera_specifications/camSpecs_calibration.json"
-    fpath_cam_calibration = "user_settings/camera_specifications/camSpecs_default.json" #have to use
-    def setupUi(self, Dialog):
-        Dialog.setObjectName("Dialog")
-        Dialog.resize(640, 480)
-        self.tabWidget = QtWidgets.QTabWidget(Dialog)
-        self.tabWidget.setGeometry(QtCore.QRect(20, 20, 600, 420))
-        self.tabWidget.setTabShape(QtWidgets.QTabWidget.Rounded)
-        self.tabWidget.setElideMode(QtCore.Qt.ElideLeft)
-        self.tabWidget.setMovable(False)
-        self.tabWidget.setObjectName("tabWidget")
-        self.tab = QtWidgets.QWidget()
-        self.tab.setObjectName("tab")
-        self.frame = QtWidgets.QFrame(self.tab)
-        self.frame.setGeometry(QtCore.QRect(260, 40, 300, 300))
-        self.frame.setAutoFillBackground(True)
-        self.frame.setFrameShape(QtWidgets.QFrame.Box)
-        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.frame.setLineWidth(3)
-        self.frame.setMidLineWidth(0)
-        self.frame.setObjectName("frame")
-        self.pushButton = QtWidgets.QPushButton(self.tab)
-        self.pushButton.setGeometry(QtCore.QRect(40, 120, 170, 40))
-        self.pushButton.setDefault(True)
-        self.pushButton.setFlat(False)
-        self.pushButton.setObjectName("pushButton")
-        self.pushButton_2 = QtWidgets.QPushButton(self.tab)
-        self.pushButton_2.setGeometry(QtCore.QRect(40, 170, 170, 40))
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.radioButton = QtWidgets.QRadioButton(self.tab)
-        self.radioButton.setGeometry(QtCore.QRect(20, 370, 61, 17))
-        self.radioButton.setObjectName("radioButton")
-        self.checkBox = QtWidgets.QCheckBox(self.tab)
-        self.checkBox.setGeometry(QtCore.QRect(20, 220, 231, 21))
-        self.checkBox.setObjectName("checkBox")
-        self.checkBox_2 = QtWidgets.QCheckBox(self.tab)
-        self.checkBox_2.setGeometry(QtCore.QRect(20, 240, 141, 17))
-        self.checkBox_2.setCheckable(True)
-        self.checkBox_2.setChecked(True)
-        self.checkBox_2.setObjectName("checkBox_2")
-        self.label = QtWidgets.QLabel(self.tab)
-        self.label.setGeometry(QtCore.QRect(80, 340, 141, 16))
-        self.label.setObjectName("label")
-        self.radioButton_2 = QtWidgets.QRadioButton(self.tab)
-        self.radioButton_2.setGeometry(QtCore.QRect(90, 370, 61, 17))
-        self.radioButton_2.setChecked(True)
-        self.radioButton_2.setObjectName("radioButton_2")
-        self.lineEdit = QtWidgets.QLineEdit(self.tab)
-        self.lineEdit.setGeometry(QtCore.QRect(20, 340, 51, 20))
-        self.lineEdit.setObjectName("lineEdit")
-        self.label_2 = QtWidgets.QLabel(self.tab)
-        self.label_2.setGeometry(QtCore.QRect(330, 10, 160, 20))
-        font = QtGui.QFont()
-        font.setFamily("Microsoft Sans Serif")
-        font.setPointSize(12)
-        self.label_2.setFont(font)
-        self.label_2.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.label_2.setTextFormat(QtCore.Qt.RichText)
-        self.label_2.setObjectName("label_2")
-        self.textBrowser = QtWidgets.QTextBrowser(self.tab)
-        self.textBrowser.setGeometry(QtCore.QRect(10, 40, 220, 60))
-        self.textBrowser.setObjectName("textBrowser")
-        self.label_3 = QtWidgets.QLabel(self.tab)
-        self.label_3.setGeometry(QtCore.QRect(50, 10, 141, 20))
-        font = QtGui.QFont()
-        font.setFamily("Microsoft Sans Serif")
-        font.setPointSize(12)
-        self.label_3.setFont(font)
-        self.label_3.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.label_3.setTextFormat(QtCore.Qt.RichText)
-        self.label_3.setObjectName("label_3")
-        self.checkBox_3 = QtWidgets.QCheckBox(self.tab)
-        self.checkBox_3.setGeometry(QtCore.QRect(20, 260, 161, 17))
-        self.checkBox_3.setObjectName("checkBox_3")
-        self.lineEdit_5 = QtWidgets.QLineEdit(self.tab)
-        self.lineEdit_5.setGeometry(QtCore.QRect(20, 280, 51, 20))
-        self.lineEdit_5.setObjectName("lineEdit_5")
-        self.label_5 = QtWidgets.QLabel(self.tab)
-        self.label_5.setGeometry(QtCore.QRect(80, 280, 161, 31))
-        self.label_5.setWordWrap(True)
-        self.label_5.setObjectName("label_5")
-        self.buttonBox = QtWidgets.QDialogButtonBox(self.tab)
-        self.buttonBox.setGeometry(QtCore.QRect(160, 360, 621, 32))
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Apply|QtWidgets.QDialogButtonBox.RestoreDefaults)
-        self.buttonBox.setCenterButtons(True)
-        self.buttonBox.setObjectName("buttonBox")
-        self.lineEdit_6 = QtWidgets.QLineEdit(self.tab)
-        self.lineEdit_6.setGeometry(QtCore.QRect(20, 310, 51, 20))
-        self.lineEdit_6.setObjectName("lineEdit_6")
-        self.label_15 = QtWidgets.QLabel(self.tab)
-        self.label_15.setGeometry(QtCore.QRect(80, 310, 161, 31))
-        self.label_15.setWordWrap(True)
-        self.label_15.setObjectName("label_15")
-        self.tabWidget.addTab(self.tab, "")
-        self.tab_2 = QtWidgets.QWidget()
-        self.tab_2.setObjectName("tab_2")
-        self.label_4 = QtWidgets.QLabel(self.tab_2)
-        self.label_4.setGeometry(QtCore.QRect(30, 10, 421, 61))
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        self.label_4.setFont(font)
-        self.label_4.setWordWrap(True)
-        self.label_4.setObjectName("label_4")
-        self.label_6 = QtWidgets.QLabel(self.tab_2)
-        self.label_6.setGeometry(QtCore.QRect(30, 60, 421, 41))
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        self.label_6.setFont(font)
-        self.label_6.setWordWrap(True)
-        self.label_6.setObjectName("label_6")
-        self.label_7 = QtWidgets.QLabel(self.tab_2)
-        self.label_7.setGeometry(QtCore.QRect(30, 110, 511, 61))
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        self.label_7.setFont(font)
-        self.label_7.setWordWrap(True)
-        self.label_7.setObjectName("label_7")
-        self.label_8 = QtWidgets.QLabel(self.tab_2)
-        self.label_8.setGeometry(QtCore.QRect(30, 180, 521, 91))
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        self.label_8.setFont(font)
-        self.label_8.setWordWrap(True)
-        self.label_8.setObjectName("label_8")
-        self.label_9 = QtWidgets.QLabel(self.tab_2)
-        self.label_9.setGeometry(QtCore.QRect(30, 300, 551, 91))
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        self.label_9.setFont(font)
-        self.label_9.setWordWrap(True)
-        self.label_9.setObjectName("label_9")
-        self.label_10 = QtWidgets.QLabel(self.tab_2)
-        self.label_10.setGeometry(QtCore.QRect(30, 270, 421, 20))
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        self.label_10.setFont(font)
-        self.label_10.setWordWrap(True)
-        self.label_10.setObjectName("label_10")
-        self.tabWidget.addTab(self.tab_2, "")
-        self.tab_3 = QtWidgets.QWidget()
-        self.tab_3.setObjectName("tab_3")
-        self.lineEdit_2 = QtWidgets.QLineEdit(self.tab_3)
-        self.lineEdit_2.setGeometry(QtCore.QRect(60, 50, 113, 20))
-        self.lineEdit_2.setObjectName("lineEdit_2")
-        self.lineEdit_3 = QtWidgets.QLineEdit(self.tab_3)
-        self.lineEdit_3.setGeometry(QtCore.QRect(60, 100, 113, 20))
-        self.lineEdit_3.setObjectName("lineEdit_3")
-        self.label_11 = QtWidgets.QLabel(self.tab_3)
-        self.label_11.setGeometry(QtCore.QRect(200, 50, 241, 21))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.label_11.setFont(font)
-        self.label_11.setObjectName("label_11")
-        self.label_12 = QtWidgets.QLabel(self.tab_3)
-        self.label_12.setGeometry(QtCore.QRect(200, 90, 221, 41))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.label_12.setFont(font)
-        self.label_12.setWordWrap(True)
-        self.label_12.setObjectName("label_12")
-        self.lineEdit_4 = QtWidgets.QLineEdit(self.tab_3)
-        self.lineEdit_4.setGeometry(QtCore.QRect(60, 150, 113, 20))
-        self.lineEdit_4.setObjectName("lineEdit_4")
-        self.label_13 = QtWidgets.QLabel(self.tab_3)
-        self.label_13.setGeometry(QtCore.QRect(200, 150, 221, 41))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.label_13.setFont(font)
-        self.label_13.setWordWrap(True)
-        self.label_13.setObjectName("label_13")
-        self.label_14 = QtWidgets.QLabel(self.tab_3)
-        self.label_14.setGeometry(QtCore.QRect(60, 210, 461, 131))
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        self.label_14.setFont(font)
-        self.label_14.setWordWrap(True)
-        self.label_14.setObjectName("label_14")
-        self.tabWidget.addTab(self.tab_3, "")
-       
-        self.retranslateUi(Dialog)
-        self.load_settings()
+class QWidget(QWidget):
+	fpath_user_settings = "user_settings/settings/user_settings.json"
+	fpath_default_settings = "user_settings/settings/default_settings.json"
+	fpath_cam_user = "user_settings/camera_specifications/camSpecs.json"
+	fpath_cam_default = "user_settings/camera_specifications/camSpecs_default.json"
+	def __init__(self):
+		super(QWidget,self).__init__()
+		self.setupUi()
 
-        self.tabWidget.setCurrentIndex(0)
-        self.buttonBox.clicked.connect(self.handle_apply_reset)
-        #self.buttonBox.accepted.connect(self.accept)
-        #self.buttonBox.rejected.connect(self.reject)
-        #QtCore.QMetaObject.connectSlotsByName(Dialog)
+	def setupUi(self):
+		self.setObjectName("Dialog")
+		self.resize(621, 480)
+		self.tabWidget = QtWidgets.QTabWidget(self)
+		self.tabWidget.setGeometry(QtCore.QRect(20, 20, 591, 381))
+		self.tabWidget.setTabShape(QtWidgets.QTabWidget.Rounded)
+		self.tabWidget.setElideMode(QtCore.Qt.ElideLeft)
+		self.tabWidget.setMovable(False)
+		self.tabWidget.setObjectName("tabWidget")
+		self.tab = QtWidgets.QWidget()
+		self.tab.setObjectName("tab")
+		self.pushButton = QtWidgets.QPushButton(self.tab)
+		self.pushButton.setGeometry(QtCore.QRect(330, 240, 170, 40))
+		self.pushButton.setDefault(True)
+		self.pushButton.setFlat(False)
+		self.pushButton.setObjectName("pushButton")
+		self.pushButton_2 = QtWidgets.QPushButton(self.tab)
+		self.pushButton_2.setGeometry(QtCore.QRect(330, 290, 170, 40))
+		self.pushButton_2.setObjectName("pushButton_2")
+		self.radioButton = QtWidgets.QRadioButton(self.tab)
+		self.radioButton.setGeometry(QtCore.QRect(20, 240, 61, 17))
+		self.radioButton.setObjectName("radioButton")
+		self.checkBox = QtWidgets.QCheckBox(self.tab)
+		self.checkBox.setGeometry(QtCore.QRect(20, 50, 141, 17))
+		self.checkBox.setCheckable(True)
+		self.checkBox.setChecked(True)
+		self.checkBox.setObjectName("checkBox")
+		self.label = QtWidgets.QLabel(self.tab)
+		self.label.setGeometry(QtCore.QRect(100, 200, 151, 21))
+		self.label.setObjectName("label")
+		self.radioButton_2 = QtWidgets.QRadioButton(self.tab)
+		self.radioButton_2.setGeometry(QtCore.QRect(90, 240, 61, 17))
+		self.radioButton_2.setChecked(True)
+		self.radioButton_2.setObjectName("radioButton_2")
+		self.lineEdit_3 = QtWidgets.QLineEdit(self.tab)
+		self.lineEdit_3.setGeometry(QtCore.QRect(20, 160, 61, 21))
+		self.lineEdit_3.setObjectName("lineEdit_3")
+		self.label_2 = QtWidgets.QLabel(self.tab)
+		self.label_2.setGeometry(QtCore.QRect(350, 130, 131, 20))
+		font = QtGui.QFont()
+		font.setFamily("Microsoft Sans Serif")
+		font.setPointSize(12)
+		self.label_2.setFont(font)
+		self.label_2.setFrameShape(QtWidgets.QFrame.NoFrame)
+		self.label_2.setTextFormat(QtCore.Qt.RichText)
+		self.label_2.setObjectName("label_2")
+		self.textBrowser_2 = QtWidgets.QTextBrowser(self.tab)
+		self.textBrowser_2.setGeometry(QtCore.QRect(300, 160, 220, 60))
+		self.textBrowser_2.setObjectName("textBrowser_2")
+		self.label_3 = QtWidgets.QLabel(self.tab)
+		self.label_3.setGeometry(QtCore.QRect(350, 10, 141, 20))
+		font = QtGui.QFont()
+		font.setFamily("Microsoft Sans Serif")
+		font.setPointSize(12)
+		self.label_3.setFont(font)
+		self.label_3.setFrameShape(QtWidgets.QFrame.NoFrame)
+		self.label_3.setTextFormat(QtCore.Qt.RichText)
+		self.label_3.setObjectName("label_3")
+		self.lineEdit = QtWidgets.QLineEdit(self.tab)
+		self.lineEdit.setGeometry(QtCore.QRect(20, 80, 61, 20))
+		self.lineEdit.setObjectName("lineEdit")
+		self.label_5 = QtWidgets.QLabel(self.tab)
+		self.label_5.setGeometry(QtCore.QRect(100, 70, 161, 41))
+		self.label_5.setWordWrap(True)
+		self.label_5.setObjectName("label_5")
+		self.lineEdit_2 = QtWidgets.QLineEdit(self.tab)
+		self.lineEdit_2.setGeometry(QtCore.QRect(20, 120, 61, 20))
+		self.lineEdit_2.setObjectName("lineEdit_2")
+		self.label_15 = QtWidgets.QLabel(self.tab)
+		self.label_15.setGeometry(QtCore.QRect(100, 110, 161, 41))
+		self.label_15.setWordWrap(True)
+		self.label_15.setObjectName("label_15")
+		self.textBrowser = QtWidgets.QTextBrowser(self.tab)
+		self.textBrowser.setGeometry(QtCore.QRect(300, 40, 220, 60))
+		self.textBrowser.setObjectName("textBrowser")
+		self.buttonBox = QtWidgets.QDialogButtonBox(self.tab)
+		self.buttonBox.setGeometry(QtCore.QRect(-10, 270, 261, 32))
+		self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+		self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Apply|QtWidgets.QDialogButtonBox.RestoreDefaults)
+		self.buttonBox.setCenterButtons(True)
+		self.buttonBox.setObjectName("buttonBox")
+		self.line = QtWidgets.QFrame(self.tab)
+		self.line.setGeometry(QtCore.QRect(260, 0, 20, 361))
+		self.line.setFrameShape(QtWidgets.QFrame.VLine)
+		self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+		self.line.setObjectName("line")
+		self.label_10 = QtWidgets.QLabel(self.tab)
+		self.label_10.setGeometry(QtCore.QRect(90, 10, 61, 20))
+		font = QtGui.QFont()
+		font.setFamily("Microsoft Sans Serif")
+		font.setPointSize(12)
+		self.label_10.setFont(font)
+		self.label_10.setFrameShape(QtWidgets.QFrame.NoFrame)
+		self.label_10.setTextFormat(QtCore.Qt.RichText)
+		self.label_10.setObjectName("label_10")
+		self.lineEdit_4 = QtWidgets.QLineEdit(self.tab)
+		self.lineEdit_4.setGeometry(QtCore.QRect(20, 200, 61, 21))
+		self.lineEdit_4.setObjectName("lineEdit_4")
+		self.label_16 = QtWidgets.QLabel(self.tab)
+		self.label_16.setGeometry(QtCore.QRect(100, 150, 151, 51))
+		self.label_16.setWordWrap(True)
+		self.label_16.setObjectName("label_16")
+		self.tabWidget.addTab(self.tab, "")
+		self.tab_2 = QtWidgets.QWidget()
+		self.tab_2.setObjectName("tab_2")
+		self.label_4 = QtWidgets.QLabel(self.tab_2)
+		self.label_4.setGeometry(QtCore.QRect(30, 10, 421, 61))
+		font = QtGui.QFont()
+		font.setPointSize(14)
+		self.label_4.setFont(font)
+		self.label_4.setWordWrap(True)
+		self.label_4.setObjectName("label_4")
+		self.label_6 = QtWidgets.QLabel(self.tab_2)
+		self.label_6.setGeometry(QtCore.QRect(30, 60, 441, 71))
+		font = QtGui.QFont()
+		font.setPointSize(14)
+		self.label_6.setFont(font)
+		self.label_6.setWordWrap(True)
+		self.label_6.setObjectName("label_6")
+		self.label_7 = QtWidgets.QLabel(self.tab_2)
+		self.label_7.setGeometry(QtCore.QRect(30, 130, 511, 71))
+		font = QtGui.QFont()
+		font.setPointSize(14)
+		self.label_7.setFont(font)
+		self.label_7.setWordWrap(True)
+		self.label_7.setObjectName("label_7")
+		self.label_8 = QtWidgets.QLabel(self.tab_2)
+		self.label_8.setGeometry(QtCore.QRect(30, 200, 521, 31))
+		font = QtGui.QFont()
+		font.setPointSize(14)
+		self.label_8.setFont(font)
+		self.label_8.setWordWrap(True)
+		self.label_8.setObjectName("label_8")
+		self.label_9 = QtWidgets.QLabel(self.tab_2)
+		self.label_9.setGeometry(QtCore.QRect(30, 230, 551, 101))
+		font = QtGui.QFont()
+		font.setPointSize(14)
+		self.label_9.setFont(font)
+		self.label_9.setWordWrap(True)
+		self.label_9.setObjectName("label_9")
+		self.tabWidget.addTab(self.tab_2, "")
+		self.tab_3 = QtWidgets.QWidget()
+		self.tab_3.setObjectName("tab_3")
+		self.lineEdit_5 = QtWidgets.QLineEdit(self.tab_3)
+		self.lineEdit_5.setGeometry(QtCore.QRect(20, 40, 113, 20))
+		self.lineEdit_5.setObjectName("lineEdit_5")
+		self.lineEdit_6 = QtWidgets.QLineEdit(self.tab_3)
+		self.lineEdit_6.setGeometry(QtCore.QRect(20, 90, 113, 20))
+		self.lineEdit_6.setObjectName("lineEdit_6")
+		self.label_11 = QtWidgets.QLabel(self.tab_3)
+		self.label_11.setGeometry(QtCore.QRect(160, 40, 241, 21))
+		font = QtGui.QFont()
+		font.setPointSize(12)
+		self.label_11.setFont(font)
+		self.label_11.setObjectName("label_11")
+		self.label_12 = QtWidgets.QLabel(self.tab_3)
+		self.label_12.setGeometry(QtCore.QRect(160, 80, 221, 41))
+		font = QtGui.QFont()
+		font.setPointSize(12)
+		self.label_12.setFont(font)
+		self.label_12.setWordWrap(True)
+		self.label_12.setObjectName("label_12")
+		self.lineEdit_7 = QtWidgets.QLineEdit(self.tab_3)
+		self.lineEdit_7.setGeometry(QtCore.QRect(20, 140, 113, 20))
+		self.lineEdit_7.setObjectName("lineEdit_7")
+		self.label_13 = QtWidgets.QLabel(self.tab_3)
+		self.label_13.setGeometry(QtCore.QRect(160, 130, 221, 41))
+		font = QtGui.QFont()
+		font.setPointSize(12)
+		self.label_13.setFont(font)
+		self.label_13.setWordWrap(True)
+		self.label_13.setObjectName("label_13")
+		self.label_14 = QtWidgets.QLabel(self.tab_3)
+		self.label_14.setGeometry(QtCore.QRect(60, 210, 461, 131))
+		font = QtGui.QFont()
+		font.setPointSize(14)
+		self.label_14.setFont(font)
+		self.label_14.setWordWrap(True)
+		self.label_14.setObjectName("label_14")
+		self.line_2 = QtWidgets.QFrame(self.tab_3)
+		self.line_2.setGeometry(QtCore.QRect(0, 200, 591, 16))
+		self.line_2.setFrameShape(QtWidgets.QFrame.HLine)
+		self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+		self.line_2.setObjectName("line_2")
+		self.line_3 = QtWidgets.QFrame(self.tab_3)
+		self.line_3.setGeometry(QtCore.QRect(0, 65, 591, 16))
+		self.line_3.setFrameShape(QtWidgets.QFrame.HLine)
+		self.line_3.setFrameShadow(QtWidgets.QFrame.Sunken)
+		self.line_3.setObjectName("line_3")
+		self.buttonBox_2 = QtWidgets.QDialogButtonBox(self.tab_3)
+		self.buttonBox_2.setGeometry(QtCore.QRect(390, 170, 191, 31))
+		self.buttonBox_2.setOrientation(QtCore.Qt.Horizontal)
+		self.buttonBox_2.setStandardButtons(QtWidgets.QDialogButtonBox.Apply|QtWidgets.QDialogButtonBox.RestoreDefaults)
+		self.buttonBox_2.setCenterButtons(True)
+		self.buttonBox_2.setObjectName("buttonBox_2")
+		self.tabWidget.addTab(self.tab_3, "")
 
-    def retranslateUi(self, Dialog):
-        _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "EyeDistanceApp"))
-        self.pushButton.setText(_translate("Dialog", "Start Detection"))
-        self.pushButton_2.setText(_translate("Dialog", "Stop Detection"))
-        self.radioButton.setText(_translate("Dialog", "seconds"))
-        self.checkBox.setText(_translate("Dialog", "Display detected eyes (May slow computer)"))
-        self.checkBox_2.setText(_translate("Dialog", "Display distance "))
-        self.label.setText(_translate("Dialog", "Notification cooldown period"))
-        self.radioButton_2.setText(_translate("Dialog", "minutes"))
-        self.lineEdit.setText(_translate("Dialog", "3"))
-        self.label_2.setText(_translate("Dialog", "Display detected eyes"))
-        self.label_3.setText(_translate("Dialog", "Displayed distance"))
-        self.checkBox_3.setText(_translate("Dialog", "Use Camera Calibration Mode"))
-        self.label_5.setText(_translate("Dialog", "Enter Displayed Distance in Inches (option 1)"))
-        self.lineEdit_6.setText(_translate("Dialog", "12"))
-        self.label_15.setText(_translate("Dialog", "Enter Measured Distance in Inches (option 1)"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Dialog", "Start Menu"))
-        self.label_4.setText(_translate("Dialog", "Step 1 - Go to start Menu and check the use camera calibration mode box. Then press apply"))
-        self.label_6.setText(_translate("Dialog", "Step 2 - Click on start detection and grab a ruler"))
-        self.label_7.setText(_translate("Dialog", "Step 3 - Place the ruler on the computer webcam and measure 12 inches straight outward from the screen "))
-        self.label_8.setText(_translate("Dialog", "Step 4 - Move your face to the 12 inches mark and make sure a displayed distance is being detected (make sure displayed distance is consistent)"))
-        self.label_9.setText(_translate("Dialog", "Step 6 - Record the displayed distance and measured distance in the Enter Displayed/Measured Distance (option 1) box (displayed distance may be different from measured distance) and click apply button"))
-        self.label_10.setText(_translate("Dialog", "Step 5 - Stop Detection"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Dialog", "Camera Calibration - Option 1"))
-        self.label_11.setText(_translate("Dialog", "Camera Focal Length in mm"))
-        self.label_12.setText(_translate("Dialog", "Camera sensor size in mm (width)"))
-        self.label_13.setText(_translate("Dialog", "Camera sensor size in mm (height)"))
-        self.label_14.setText(_translate("Dialog", "Instructions: Focal length or sensor size, width and height, need to be filled out. It is also acceptable to enter both focal length and sensor size information. *Please use option 1 if distance displayed isn\'t accurate"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("Dialog", "Camera Calibration - Option 2"))
+		self.retranslateUi()
+		self.load_settings()
 
-    def display_detected_eyes(self):
-        if self.checkBox.isChecked() == True:
-            return True
-        else:
-            return False
+		self.tabWidget.setCurrentIndex(0)
+		self.buttonBox.clicked.connect(self.handle_apply_reset_tab_1)
+		self.buttonBox_2.clicked.connect(self.handle_apply_reset_tab_3)
+		self.pushButton.clicked.connect(self.start_detection)
+		self.pushButton_2.clicked.connect(self.stop_detection)
 
-    def display_distance(self):
-        if self.checkBox_2.isChecked() == True:
-            return True 
-        else:
-            return False
+		quit = QAction("Quit", self)
+		quit.triggered.connect(self.closeEvent)
 
-    def camera_calibration_option_one(self):
-        if self.checkBox_3.isChecked() == True:
-            return True
-        else:
-            return False
-    
-    def get_enter_display_distance(self):
-        return self.lineEdit_5.text()
+		self.init_detection()
 
-    def get_enter_measured_distance(self):
-        return self.lineEdit_6.text()
+	def retranslateUi(self):
+		_translate = QtCore.QCoreApplication.translate
+		self.setWindowTitle(_translate("Dialog", "EyeDistanceApp"))
+		self.pushButton.setText(_translate("Dialog", "Start Detection"))
+		self.pushButton_2.setText(_translate("Dialog", "Stop Detection"))
+		self.radioButton.setText(_translate("Dialog", "seconds"))
+		self.checkBox.setText(_translate("Dialog", "Display distance "))
+		self.label.setText(_translate("Dialog", "Notification cooldown period"))
+		self.radioButton_2.setText(_translate("Dialog", "minutes"))
+		self.lineEdit_3.setText(_translate("Dialog", "0"))
+		self.label_2.setText(_translate("Dialog", "Detection Status"))
+		self.label_3.setText(_translate("Dialog", "Displayed distance"))
+		self.label_5.setText(_translate("Dialog", "Enter Displayed Distance in Inches (option 1 only)"))
+		self.lineEdit_2.setText(_translate("Dialog", "12"))
+		self.label_15.setText(_translate("Dialog", "Enter Measured Distance in Inches (option 1 only)"))
+		self.label_10.setText(_translate("Dialog", "Settings"))
+		self.lineEdit_4.setText(_translate("Dialog", "3"))
+		self.lineEdit_5.setText(_translate("Dialog", "2.1362835327293075"))
+		self.lineEdit_6.setText(_translate("Dialog", "1.6"))
+		self.lineEdit_7.setText(_translate("Dialog", "1.2"))
+		self.label_16.setText(_translate("Dialog", "Webcam selection (0 - default webcam, 1 - connected webcam, etc)"))
+		self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Dialog", "Start Menu"))
+		self.label_4.setText(_translate("Dialog", "Step 1 - Click on start detection and grab a ruler"))
+		self.label_6.setText(_translate("Dialog", "Step 2 -  Place the ruler on the computer webcam and measure a fixed distance, (ex: 12 inches) straight outward from the screen "))
+		self.label_7.setText(_translate("Dialog", "Step 3 Move your face to the 12 inches mark and make sure a displayed distance is being detected (make sure displayed distance is consistent)"))
+		self.label_8.setText(_translate("Dialog", "Step 4  - Stop Detection"))
+		self.label_9.setText(_translate("Dialog", "Step 5 - Record the displayed distance and measured distance in the Enter Displayed/Measured Distance (calibration only) box (displayed distance may be different from measured distance) and click apply button"))
+		self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Dialog", "Camera Calibration - Option 1"))
+		self.label_11.setText(_translate("Dialog", "Camera Focal Length in mm"))
+		self.label_12.setText(_translate("Dialog", "Camera sensor size in mm (width)"))
+		self.label_13.setText(_translate("Dialog", "Camera sensor size in mm (height)"))
+		self.label_14.setText(_translate("Dialog", "Instructions: Sensor size, width and height, need to be filled out. It is also acceptable to enter both focal length and sensor size information. *Please use option 1 if distance displayed isn\'t accurate"))
+		self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("Dialog", "Camera Calibration - Option 2"))
 
-    def get_notification_cooldown(self):
-        return self.lineEdit.text()
+	def get_display_distance(self):
+		if self.checkBox.isChecked() == True:
+			return True 
+		else:
+			return False
 
-    def get_seconds_or_minutes(self):
-        if self.radioButton.isChecked() == True:
-            return True #seconds
-        else:
-            return False #minutes
+	def get_enter_display_distance(self):
+		return self.lineEdit.text()
 
-    def validate_string(self, txt):
-        txt = txt.replace(".","")
-        if txt == "":
-            return True
-        if txt.isdigit() and txt.count(".") <= 1:
-            return True
-        elif int(txt) < 0:
-            return False
-        return False
+	def get_enter_measured_distance(self):
+		return self.lineEdit_2.text()
 
-    def accept(self):
-        fpath_user_settings = Ui_Dialog.fpath_user_settings
-        try:
-            with open(fpath_user_settings, 'r') as json_file:
-                settings = json.load(json_file)
-        except OSError:
-            print("Could not open/read file", fpath_user_settings)
-        settings["display_detected_eyes"] = self.display_detected_eyes()
-        settings["display_distance"] = self.display_distance()
-        settings["camera_calibration"] = self.camera_calibration_option_one()
-        displayed_distance = self.get_enter_display_distance()
-        measured_distance = self.get_enter_measured_distance()
-        notification_cooldown = self.get_notification_cooldown()
-        if self.validate_string(displayed_distance) == True:
-            settings["displayed_distance"] = self.get_enter_display_distance()
-        if self.validate_string(measured_distance) == True:
-            settings["measured_distance"] = self.get_enter_measured_distance()
-        if self.validate_string(notification_cooldown) == True:
-            settings["notification_cooldown"] = self.get_notification_cooldown()
-        settings["seconds_or_minutes"] = self.get_seconds_or_minutes()
-        try:
-            with open(fpath_user_settings, 'w') as json_file:
-                json.dump(settings , json_file, indent=4)
-        except OSError:
-            print("Could not open/write file",fpath_user_settings)
-    
-    def reset(self):
-        fpath_default_settings = Ui_Dialog.fpath_default_settings
-        fpath_user_settings = Ui_Dialog.fpath_user_settings
-        try:
-            with open(fpath_default_settings, 'r') as json_file:
-                settings = json.load(json_file)
-        except OSError:
-            print("Could not open/read file", fpath_default_settings)
-        try:
-            with open(fpath_user_settings, 'w') as json_file:
-                json.dump(settings, json_file, indent=4)
-        except OSError:
-            print("Could not open/write file",fpath_user_settings)
-        self.load_settings()
-      
-    def handle_apply_reset(self,button):
-        std_b = self.buttonBox.standardButton(button)
-        if std_b == QtWidgets.QDialogButtonBox.Apply:
-            self.accept()
-        elif std_b == QtWidgets.QDialogButtonBox.RestoreDefaults:
-            self.reset()
+	def get_webcam(self):
+		return self.lineEdit_3.text()
 
-    def settings_hashtable(self):
-        settings = {
-         0:self.checkBox,
-         1:self.checkBox_2,
-         2:self.checkBox_3,
-         3:self.lineEdit_5,
-         4:self.lineEdit_6,
-         5:self.lineEdit,
-         6:(self.radioButton,self.radioButton_2)
-        }
-        return settings
+	def get_notification_cooldown(self):
+		return self.lineEdit_4.text()
 
-    def load_settings(self):
-        fpath_user_settings = Ui_Dialog.fpath_user_settings
-        try:
-            with open(fpath_user_settings, 'r') as json_file:
-                settings = json.load(json_file)
-        except OSError:
-            print("Could not open/read file", fpath_user_settings)
-        checkbox = ["display_detected_eyes","display_distance","camera_calibration"]
-        textfield = ["displayed_distance","measured_distance","notification_cooldown"]
-        widget_id = self.settings_hashtable()
-        count = 0
-        for box_id in checkbox:
-            if settings[box_id] == True:
-                widget_id[count].setChecked(True)
-            else:
-                widget_id[count].setChecked(False)
-            count+=1
-        for field_id in textfield:
-            if settings[field_id] == None:
-                widget_id[count].setText("")
-            else:
-                widget_id[count].setText(str(settings[field_id]))
-            count+=1
-        if settings["seconds_or_minutes"] == True:
-            widget_id[count][0].setChecked(True)
-        else:
-            widget_id[count][1].setChecked(True)
+	def get_seconds_or_minutes(self):
+		if self.radioButton.isChecked() == True:
+			return True #seconds
+		else:
+			return False #minutes
 
-    def start_detection(self):
-        fpath_user_settings = Ui_Dialog.fpath_user_settings
-        try:
-            with open(fpath_user_settings,'r') as json_file:
-                settings = json.load(json_file)
-        except OSError:
-            print("Could not open/read file", file_user_settings)
-        for key,val in settings:
-            if key == "display_detected_eyes":
-                display_image = val
-            elif key == "display_distance":
-                info = val
-            elif key == "camera_calibration":
-                fpath_cam_user = "" #fix
-                fpath_cam_calibration = "" #fix
-                try:
-                    with open(fpath_cam_calibration,'r') as json_file:
-                        cam_calibration = json.load(json_file)
-                except OSError:
-                    print("Could not open/read file", fpath_cam_calibration)
-                try:
-                    with open(fpath_cam_user,'w') as json_file:
-                        json.dump(cam_calibration, json_file, indent=4)
-                except:
-                    print("Could not open/write file",fpath_user_settings)
-            elif key == "notification_cooldown":
-                sleep_time = val
-            elif key == "seconds_or_minutes":
-                seconds_or_minutes = val #true - seconds, false - minutes
-        if settings["displayed_distance"] != None and settings["measured_distance"] != None:
-            adj_factor = measured_distance - displayed_distance 
+	def get_focal_length(self):
+		return self.lineEdit_5.text()
 
-        #rundetection()
-        
-    def stop_detection(self):
-        pass
+	def get_sensor_size_width(self):
+		return self.lineEdit_6.text()
+
+	def get_sensor_size_height(self):
+		return self.lineEdit_7.text()
+
+	def validate_string(self, txt):
+		txt = txt.replace(".","")
+		if txt == "":
+			return True
+		if txt.isdigit() and txt.count(".") <= 1:
+			return True
+		elif int(txt) < 0:
+			return False
+		return False
+
+	def accept_tab_1(self):
+		fpath_user_settings = QWidget.fpath_user_settings
+		try:
+			with open(fpath_user_settings, 'r') as json_file:
+				settings = json.load(json_file)
+		except OSError:
+			print("Could not open/read file", fpath_user_settings)
+
+		settings["display_distance"] = self.get_display_distance()
+		displayed_distance = self.get_enter_display_distance()
+		measured_distance = self.get_enter_measured_distance()
+		webcam = self.get_webcam()
+		notification_cooldown = self.get_notification_cooldown()
+		if self.validate_string(displayed_distance) == True:
+			settings["displayed_distance"] = displayed_distance
+		if self.validate_string(measured_distance) == True:
+			settings["measured_distance"] = measured_distance
+		if self.validate_string(notification_cooldown) == True:
+			settings["notification_cooldown"] = notification_cooldown
+		if self.validate_string(webcam) == True:
+			settings["webcam"] = webcam
+		settings["seconds_or_minutes"] = self.get_seconds_or_minutes()
+		try:
+			with open(fpath_user_settings, 'w') as json_file:
+				json.dump(settings , json_file, indent=4)
+		except OSError:
+			print("Could not open/write file",fpath_user_settings)
+	
+	def reset_tab_1(self):
+		fpath_default_settings = QWidget.fpath_default_settings
+		fpath_user_settings = QWidget.fpath_user_settings
+		try:
+			with open(fpath_default_settings, 'r') as json_file:
+				settings = json.load(json_file)
+		except OSError:
+			print("Could not open/read file", fpath_default_settings)
+		try:
+			with open(fpath_user_settings, 'w') as json_file:
+				json.dump(settings, json_file, indent=4)
+		except OSError:
+			print("Could not open/write file",fpath_user_settings)
+		self.load_settings()
+	  
+	def handle_apply_reset_tab_1(self,button):
+		std_b = self.buttonBox.standardButton(button)
+		if std_b == QtWidgets.QDialogButtonBox.Apply:
+			self.accept_tab_1()
+		elif std_b == QtWidgets.QDialogButtonBox.RestoreDefaults:
+			self.reset_tab_1()
+	
+	def accept_tab_3(self):
+		fpath_cam_user = QWidget.fpath_cam_user
+		try:
+			with open(fpath_cam_user, 'r') as json_file:
+				settings = json.load(json_file)
+		except OSError:
+			print("Could not open/read file", fpath_cam_user)
+		focal_length = self.get_focal_length()
+		sensor_width = self.get_sensor_size_width()
+		sensor_height = self.get_sensor_size_height()
+		if self.validate_string(focal_length) == True:
+			if focal_length == "":
+				settings["focal_length"] = None
+			else:
+				settings["focal_length"] = float(focal_length)
+		if self.validate_string(sensor_width) == True:
+			if sensor_width == "":
+				settings["sensorSize"][0] = None
+			else:
+				settings["sensorSize"][0] = float(sensor_width)
+		if self.validate_string(sensor_height) == True:
+			if sensor_height == "":
+				settings["sensorSize"][1] = None
+			else:
+				settings["sensorSize"][1] = float(sensor_height)
+		try:
+			with open(fpath_cam_user, 'w') as json_file:
+				json.dump(settings , json_file, indent=4)
+		except OSError:
+			print("Could not open/write file",fpath_cam_user)
+		calibrate()
+		try:
+			with open(fpath_cam_user, 'r') as json_file:
+				settings = json.load(json_file)
+		except OSError:
+			print("Could not open/write file",fpath_cam_user)
+		self.lineEdit_5.setText(str(settings["focal_length"]))
+		self.lineEdit_6.setText(str(settings["sensorSize"][0]))
+		self.lineEdit_7.setText(str(settings["sensorSize"][1]))
+	
+	def reset_tab_3(self):
+		fpath_cam_default = QWidget.fpath_cam_default
+		fpath_cam_user = QWidget.fpath_cam_user
+		try:
+			with open(fpath_cam_default, 'r') as json_file:
+				settings = json.load(json_file)
+		except OSError:
+			print("Could not open/read file", fpath_cam_default)
+		try:
+			with open(fpath_cam_user, 'w') as json_file:
+				json.dump(settings, json_file, indent=4)
+		except OSError:
+			print("Could not open/write file",fpath_cam_user)
+		self.lineEdit_5.setText(str(settings["focal_length"]))
+		self.lineEdit_6.setText(str(settings["sensorSize"][0]))
+		self.lineEdit_7.setText(str(settings["sensorSize"][1]))
+
+	def handle_apply_reset_tab_3(self,button):
+		std_b = self.buttonBox_2.standardButton(button)
+		if std_b == QtWidgets.QDialogButtonBox.Apply:
+			self.accept_tab_3()
+		elif std_b == QtWidgets.QDialogButtonBox.RestoreDefaults:
+			self.reset_tab_3()
+
+	def settings_hashtable(self):
+		settings = {
+		 0:self.checkBox,
+		 1:self.lineEdit,
+		 2:self.lineEdit_2,
+		 3:self.lineEdit_3,
+		 4:self.lineEdit_4,
+		 5:(self.radioButton,self.radioButton_2)
+		}
+		return settings
+
+	def load_settings(self):
+		fpath_user_settings = QWidget.fpath_user_settings
+		try:
+			with open(fpath_user_settings, 'r') as json_file:
+				settings = json.load(json_file)
+		except OSError:
+			print("Could not open/read file", fpath_user_settings)
+		
+		textfield = ["displayed_distance","measured_distance","webcam","notification_cooldown"]
+		widget_id = self.settings_hashtable()
+		count = 0
+		if settings["display_distance"] == True:
+			widget_id[count].setChecked(True)
+		else:
+			widget_id[count].setChecked(False)
+		count+=1
+		for field_id in textfield:
+			if settings[field_id] == None:
+				widget_id[count].setText("")
+			else:
+				widget_id[count].setText(str(settings[field_id]))
+			count+=1
+		if settings["seconds_or_minutes"] == True:
+			widget_id[count][0].setChecked(True)
+		else:
+			widget_id[count][1].setChecked(True)
+
+	def start_detection(self):
+		fpath_user_settings = QWidget.fpath_user_settings
+		try:
+			with open(fpath_user_settings,'r') as json_file:
+				settings = json.load(json_file)
+		except OSError:
+			print("Could not open/read file", file_user_settings)
+		display_image = False
+		sleep_time = 3
+		seconds_or_minutes = False
+		info = False
+		adj_factor = 0
+		src = 0
+		for key,val in settings.items():
+			if key == "display_distance":
+				info = val
+			elif key == "webcam":
+				src = val
+			elif key == "notification_cooldown":
+				sleep_time = val
+			elif key == "seconds_or_minutes":
+				seconds_or_minutes = val #true - seconds, false - minutes
+		displayed_distance = settings["displayed_distance"]
+		measured_distance = settings["measured_distance"]
+		if displayed_distance != "" and measured_distance != "":
+			adj_factor = float(measured_distance) - float(displayed_distance) 
+
+		self.run_detection(display_image,sleep_time,seconds_or_minutes,info,adj_factor,src)
+	
+	def init_detection(self):
+		self.screen_distance = ScreenDistance() 
+		self.screen_distance.load_models()
+		#self.toaster = ToastNotifier()
+		self.cam = None
+		self.timer = QtCore.QTimer()
+		self.timer.setSingleShot(True)
+		self.fps = FPS()
+
+		self.toaster = Notification(app_id="example app",
+					 title="ScreenDistance Monitor",
+					 msg="Reminder: Too close to screen!")
+		self.toaster.set_audio(audio.Default, loop=True)
+		self.toaster.build()
+
+	def run_detection(self,display_image=False, sleep_time=3, seconds_or_minutes=False, info=False, adj_factor=0, src=0):
+		detected_count = 0
+		if seconds_or_minutes == False:
+			sleep_time = int(sleep_time) * 60
+		else:
+			sleep_time = int(sleep_time)
+		fetched_count = 0
+		setImageSize = (400,400) #can change in future
+		self.cam = WebcamVideoStream(int(src),width=setImageSize[0],height=setImageSize[1])
+		self.cam.start()
+		time.sleep(2.0)
+		print('[STATUS] Capturing from webcam...')
+		self.fps.start()
+		while 1:
+			image = self.cam.read()
+			if self.cam.emptyFrame():
+				print('[STATUS] Finished detection')
+				break
+			if self.fps._numFrames % 60 == 0: #Runs detection every 60 frames
+				eyedetection_status = self.screen_distance.detect_eyes(image, display_image,info,adj_factor)
+				fetched_count += 1
+				if eyedetection_status == 1: #eye distance is too close
+					detected_count += 1
+				elif eyedetection_status == -1: #eye distance is ideal
+					detected_count = 0
+				if self.get_display_distance() == False:
+					self.textBrowser.setText('Display Distance option disabled')
+					self.textBrowser_2.setText('Display Distance option disabled')
+				else:
+					if self.screen_distance.dis == None:
+						self.textBrowser.setText('No eyes detected, check camera angle and brightness')
+					elif self.screen_distance.dis < 0.0:
+						self.textBrowser.setText('Distance is negative, please check your settings')
+					elif self.screen_distance.dis != None:
+						self.textBrowser.setText('{:.1f} in'.format(self.screen_distance.dis))
+					if self.timer.remainingTime() != -1:
+						self.textBrowser_2.setText('Number of eyes: {}, Cooldown timer: {} seconds remaining'.format(self.screen_distance.eye_count,
+							int(self.timer.remainingTime()/1000)))
+					else:
+						self.textBrowser_2.setText('Number of eyes: {}'.format(self.screen_distance.eye_count))
+			if fetched_count % 6 == 0 and self.timer.isActive() == False:
+				if detected_count >= 2:
+					self.toaster.show()
+					self.timer.start(sleep_time * 1000)    
+				fetched_count = 0
+				detected_count = 0
+			
+			key = cv2.waitKey(1)
+			if key & 0xFF == ord("q"):
+				break
+			self.fps.update()
+ 
+	def stop_detection(self):
+		self.timer.stop()
+		if self.cam != None:
+			self.cam.stop()
+		self.fps.stop()
+
+	def closeEvent(self, event):
+		prompt_user = QtWidgets.QMessageBox.question(self,
+					  "Confirm Exit",
+					  "Are you sure you want to exit?",
+					  QtWidgets.QMessageBox.Yes| QtWidgets.QMessageBox.No)
+		if prompt_user == QtWidgets.QMessageBox.Yes:
+			self.stop_detection()# Destroy the camera if it is not already
+			event.accept()
+		else:
+			event.ignore()
+
 
 if __name__ == "__main__":
-    if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
-        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
-    if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
-        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
-    app = QtWidgets.QApplication(sys.argv)
-    Dialog = QtWidgets.QDialog()
-    ui = Ui_Dialog()
-    ui.setupUi(Dialog)
-    Dialog.show()
-    sys.exit(app.exec_())
+	if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+		QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+	if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+		QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+	app = QtWidgets.QApplication(sys.argv)
+	Dialog = QWidget()
+	Dialog.show()
+	sys.exit(app.exec_())

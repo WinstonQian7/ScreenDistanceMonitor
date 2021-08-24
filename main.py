@@ -4,7 +4,7 @@ import argparse
 #local modules
 import processing
 from processing.distance_processing import runDetection 
-from calibration_cam import calibration
+from calibration_cam import Calibration
 
 def main():
     parser = argparse.ArgumentParser()

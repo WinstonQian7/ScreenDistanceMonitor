@@ -36,7 +36,7 @@ imgDimension.json: imageDimension
 }
        
 """
-class calibration:
+class Calibration:
     def __init__(self,specifications):
         self.matrix = None
         self.spec = specifications
@@ -132,7 +132,7 @@ def calibrate():
             imgDimension = json.load(json_file)
     except OSError:
         print("Could not open/read file", fpath_img)
-    setup = calibration(spec)
+    setup = Calibration(spec)
     imgDimension['imageDimension'] = tuple(imgDimension['imageDimension'])
     if spec['focal_length'] != None and spec['sensorSize'] != None:
         pass 
