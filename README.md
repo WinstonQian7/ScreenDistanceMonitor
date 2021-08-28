@@ -1,6 +1,6 @@
 # Eye Distance Monitor for Desktops
 Utlilizes OpenCV Computer Vision and adapts [Ivan Ludvig](https://ivanludvig.github.io/blog/2019/07/20/calculating-screen-to-face-distance-android
-) research paper to detect if distance from webcam to computer screen is healthly (>24 inches). User will recieve windows toast notification if distance detected is consistantly less than threshold (<24 inches). Comes with two configuration methods (*Choose one*),
+) research paper to detect if distance from webcam to computer screen is healthy (>24 inches). User will recieve windows toast notification if distance detected is consistantly less than threshold (<24 inches). Comes with two configuration methods (*Choose one*),
 1. One time configuration - Measure distance from webcam to user using a ruler. Record the measured distance and displayed distance shown in the application (*Displayed distance will vary from measured distance during configuration)*. It is recommended to use a ruler pointing straight outward from your webcam to your eye level. 
 2. Requires sensor size of the webcam you are currently using. *Varies from webcam manufacturer*
 
