@@ -509,7 +509,7 @@ class QWidget(QWidget):
 		self.timer.setSingleShot(True)
 		self.fps = FPS()
 
-		self.toaster = Notification(app_id="example app",
+		self.toaster = Notification(app_id="ScreenDistanceApp",
 					 title="ScreenDistance Monitor",
 					 msg="Reminder: Too close to screen!")
 		self.toaster.set_audio(audio.Default, loop=True)

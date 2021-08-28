@@ -1,6 +1,7 @@
 # import the necessary packages
 from threading import Thread
 import cv2
+import numpy as np
 class WebcamVideoStream:
 	def __init__(self, src=0,width=400,height=400):
 		# initialize the video camera stream and read the first frame
@@ -23,7 +24,6 @@ class WebcamVideoStream:
 				self.stream.release()
 			# otherwise, read the next frame from the stream
 			(self.grabbed, self.frame) = self.stream.read()
-			
 			self.frame = cv2.resize(self.frame,self.dimension,interpolation=cv2.INTER_AREA)
 	def read(self):
 		# return the frame most recently read

@@ -105,13 +105,17 @@ class ScreenDistance:
 def runDetection(display_image=False, sleep_time=3, seconds_or_minutes=False, info=False, adj_factor=0):
     screen_distance = ScreenDistance() 
     screen_distance.load_models()
-    toaster = ToastNotifier()
     detected_count = 0
     if seconds_or_minutes == False:
         sleep_time = sleep_time * 60
     else:
         sleep_time = sleep_time
     fetched_count = 0
+    toaster = Notification(app_id="ScreenDistanceApp",
+                     title="ScreenDistance Monitor",
+                     msg="Reminder: Too close to screen!")
+    toaster.set_audio(audio.Default, loop=True)
+    toaster.build()
     setImageSize = (400,400) #can change in future
     cam = WebcamVideoStream(src=0,width=setImageSize[0],height=setImageSize[1])
     cam.start()
@@ -136,12 +140,10 @@ def runDetection(display_image=False, sleep_time=3, seconds_or_minutes=False, in
         #of sleep parameter
         if fetched_count == 6:
             if detected_count >= 2:
-                self.toaster = Notification(app_id="example app",
-                     title="ScreenDistance Monitor",
-                     msg="Reminder: Too close to screen!")
-                self.toaster.set_audio(audio.Default, loop=True)
-                self.toaster.build().show()
-            #fps.sleep_time(sleep_time)
+                toaster.show()
+                fps.sleep_time(sleep_time)
+                time.sleep(sleep_time)
+
             fetched_count = 0
             detected_count = 0
         key = cv2.waitKey(1)
